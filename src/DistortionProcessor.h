@@ -205,37 +205,37 @@ public:
     {
         std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "level", "Level", juce::NormalisableRange<float>(-60, 12, 0.1, 1, false), 0, juce::String("Level"),
+            juce::ParameterID("level",1), "Level", juce::NormalisableRange<float>(-60, 12, 0.1, 1, false), 0, juce::String("Level"),
             juce::AudioProcessorParameter::genericParameter,
             [](float value, float)
             {
                 return juce::String(value, 1) + " dB";
             }));
         params.push_back(std::make_unique<juce::AudioParameterChoice>(
-            "type", "Type", juce::StringArray{"linear cut", "tanh", "atan", "1/sqrt", "rectify"}, 0));
+            juce::ParameterID("type",1), "Type", juce::StringArray{"linear cut", "tanh", "atan", "1/sqrt", "rectify"}, 0));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "preboostLow", "Preboost Low", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
+            juce::ParameterID("preboostLow",1), "Preboost Low", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
             juce::String("Preboost Low"), juce::AudioProcessorParameter::genericParameter,
             [](float value, float)
             {
                 return juce::String(value, 1) + " dB";
             }));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "preboostHigh", "Preboost High", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
+            juce::ParameterID("preboostHigh",1), "Preboost High", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
             juce::String("Preboost High"), juce::AudioProcessorParameter::genericParameter,
             [](float value, float)
             {
                 return juce::String(value, 1) + " dB";
             }));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "crossOver", "Cross Over", juce::NormalisableRange<float>(100, 10000, 1, 0.5, false), 800,
+            juce::ParameterID("crossOver",1), "Cross Over", juce::NormalisableRange<float>(100, 10000, 1, 0.5, false), 800,
             juce::String("Cross Over"), juce::AudioProcessorParameter::genericParameter,
             [](float value, float)
             {
                 return juce::String(value, 0) + " Hz";
             }));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "cut", "Cut", juce::NormalisableRange<float>(100, 20000, 1, 0.5, false), 8000, juce::String("Cut"),
+            juce::ParameterID("cut",1), "Cut", juce::NormalisableRange<float>(100, 20000, 1, 0.5, false), 8000, juce::String("Cut"),
             juce::AudioProcessorParameter::genericParameter,
             [](float value, float)
             {
