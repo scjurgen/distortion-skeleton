@@ -4,3 +4,6 @@
 [submodule "3rdparty/JUCE"]
 	path = 3rdparty/JUCE
 	url = https://github.com/juce-framework/JUCE.git
+[submodule "dsp"]
+	path = dsp
+	url = https://github.com/scjurgen/AbacDsp.git

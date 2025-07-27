@@ -23,8 +23,8 @@ add_subdirectory(3rdparty/JUCE build)
 # https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md
 juce_add_plugin("${PROJECT_NAME}"
         VERSION "0.0.0"
-        ICON_BIG "logo2.png"
-        ICON_SMALL "logo2.png"
+        ICON_BIG "logo3.png"
+        ICON_SMALL "logo3.png"
         COMPANY_NAME "distortion"
         COMPANY_WEBSITE "https://distortion.de"
         COMPANY_EMAIL "info@distortion.de"
