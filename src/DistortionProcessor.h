@@ -13,29 +13,26 @@
 
 class AudioPluginAudioProcessor : public juce::AudioProcessor, public juce::AudioProcessorValueTreeState::Listener
 {
-public:
+  public:
     static constexpr size_t NumSamplesPerBlock = 16;
 
     AudioPluginAudioProcessor()
         : AudioProcessor(BusesProperties()
 #if !JucePlugin_IsMidiEffect
 #if !JucePlugin_IsSynth
-              .withInput("Input", juce::AudioChannelSet::stereo(), true)
+                             .withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-              .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+                             .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-              )
-          , m_avgCpu(8, 0)
-          , m_head{0}
-          , m_runningWindowCpu(8 * 300)
-          , fixedRunner([this](const AudioBuffer<2, NumSamplesPerBlock>& input,
-                               AudioBuffer<2, NumSamplesPerBlock>& output)
-          {
-              pluginRunner->processBlock(input, output);
-          })
-          , m_parameters(*this, nullptr, "PARAMETERS", createParameterLayout())
-          , m_envInput{AbacadDsp::RmsFollower(10000), AbacadDsp::RmsFollower(10000)}
-          , m_envOutput{AbacadDsp::RmsFollower(10000), AbacadDsp::RmsFollower(10000)}
+                             )
+        , m_avgCpu(8, 0)
+        , m_head{0}
+        , m_runningWindowCpu(8 * 300)
+        , fixedRunner([this](const AudioBuffer<2, NumSamplesPerBlock>& input,
+                             AudioBuffer<2, NumSamplesPerBlock>& output) { pluginRunner->processBlock(input, output); })
+        , m_parameters(*this, nullptr, "PARAMETERS", createParameterLayout())
+        , m_envInput{AbacadDsp::RmsFollower(10000), AbacadDsp::RmsFollower(10000)}
+        , m_envOutput{AbacadDsp::RmsFollower(10000), AbacadDsp::RmsFollower(10000)}
     {
         m_parameters.addParameterListener("level", this);
         m_parameters.addParameterListener("type", this);
@@ -205,42 +202,29 @@ public:
     {
         std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("level",1), "Level", juce::NormalisableRange<float>(-60, 12, 0.1, 1, false), 0, juce::String("Level"),
-            juce::AudioProcessorParameter::genericParameter,
-            [](float value, float)
-            {
-                return juce::String(value, 1) + " dB";
-            }));
+            juce::ParameterID("level", 1), "Level", juce::NormalisableRange<float>(-60, 12, 0.1, 1, false), 0,
+            juce::String("Level"), juce::AudioProcessorParameter::genericParameter,
+            [](float value, float) { return juce::String(value, 1) + " dB"; }));
         params.push_back(std::make_unique<juce::AudioParameterChoice>(
-            juce::ParameterID("type",1), "Type", juce::StringArray{"linear cut", "tanh", "atan", "1/sqrt", "rectify"}, 0));
+            juce::ParameterID("type", 1), "Type", juce::StringArray{"linear cut", "tanh", "atan", "1/sqrt", "rectify"},
+            0));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("preboostLow",1), "Preboost Low", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
-            juce::String("Preboost Low"), juce::AudioProcessorParameter::genericParameter,
-            [](float value, float)
-            {
-                return juce::String(value, 1) + " dB";
-            }));
+            juce::ParameterID("preboostLow", 1), "Preboost Low", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false),
+            0, juce::String("Preboost Low"), juce::AudioProcessorParameter::genericParameter,
+            [](float value, float) { return juce::String(value, 1) + " dB"; }));
         params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("preboostHigh",1), "Preboost High", juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0,
-            juce::String("Preboost High"), juce::AudioProcessorParameter::genericParameter,
-            [](float value, float)
-            {
-                return juce::String(value, 1) + " dB";
-            }));
-        params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("crossOver",1), "Cross Over", juce::NormalisableRange<float>(100, 10000, 1, 0.5, false), 800,
-            juce::String("Cross Over"), juce::AudioProcessorParameter::genericParameter,
-            [](float value, float)
-            {
-                return juce::String(value, 0) + " Hz";
-            }));
-        params.push_back(std::make_unique<juce::AudioParameterFloat>(
-            juce::ParameterID("cut",1), "Cut", juce::NormalisableRange<float>(100, 20000, 1, 0.5, false), 8000, juce::String("Cut"),
+            juce::ParameterID("preboostHigh", 1), "Preboost High",
+            juce::NormalisableRange<float>(-32, 32, 0.1, 1, false), 0, juce::String("Preboost High"),
             juce::AudioProcessorParameter::genericParameter,
-            [](float value, float)
-            {
-                return juce::String(value, 0) + " Hz";
-            }));
+            [](float value, float) { return juce::String(value, 1) + " dB"; }));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID("crossOver", 1), "Cross Over", juce::NormalisableRange<float>(100, 10000, 1, 0.5, false),
+            800, juce::String("Cross Over"), juce::AudioProcessorParameter::genericParameter,
+            [](float value, float) { return juce::String(value, 0) + " Hz"; }));
+        params.push_back(std::make_unique<juce::AudioParameterFloat>(
+            juce::ParameterID("cut", 1), "Cut", juce::NormalisableRange<float>(100, 20000, 1, 0.5, false), 8000,
+            juce::String("Cut"), juce::AudioProcessorParameter::genericParameter,
+            [](float value, float) { return juce::String(value, 0) + " Hz"; }));
 
         return {params.begin(), params.end()};
     }
@@ -253,30 +237,13 @@ public:
             return;
         }
         static const std::map<juce::String, std::function<void(AudioPluginAudioProcessor&, float)>> parameterMap{
-            {"level", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setLevel(v);
-            }},
-            {"type", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setType(static_cast<size_t>(v));
-            }},
-            {"preboostLow", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setPreboostLow(v);
-            }},
-            {"preboostHigh", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setPreboostHigh(v);
-            }},
-            {"crossOver", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setCrossOver(v);
-            }},
-            {"cut", [](AudioPluginAudioProcessor& p, const float v)
-            {
-                p.pluginRunner->setCut(v);
-            }},
+            {"level", [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setLevel(v); }},
+            {"type",
+             [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setType(static_cast<size_t>(v)); }},
+            {"preboostLow", [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setPreboostLow(v); }},
+            {"preboostHigh", [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setPreboostHigh(v); }},
+            {"crossOver", [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setCrossOver(v); }},
+            {"cut", [](AudioPluginAudioProcessor& p, const float v) { p.pluginRunner->setCut(v); }},
 
         };
         if (auto it = parameterMap.find(parameterID); it != parameterMap.end())
@@ -374,7 +341,7 @@ public:
     size_t samplesProcessed = 0;
     size_t m_sampleRate{48000};
 
-private:
+  private:
     static bool isChanged(const float a, const float b)
     {
         return std::abs(a - b) > 1E-8f;

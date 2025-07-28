@@ -18,9 +18,9 @@ template <OnePoleFilterCharacteristic FilterCharacteristic, bool ClampValues>
 class OnePoleFilter
 {
   public:
-    explicit OnePoleFilter(const float sampleRate, const float frequency=100.f) noexcept
+    explicit OnePoleFilter(const float sampleRate, const float frequency = 100.f) noexcept
         : m_sampleRate(sampleRate)
-    , m_cutoff(frequency)
+        , m_cutoff(frequency)
     {
         setCutoff(frequency);
     }
@@ -52,20 +52,7 @@ class OnePoleFilter
             }
             else
             {
-                // double tan_w0 = std::tan(M_PI * cutoff / m_sampleRate);
-                // double alpha = (1.0 - tan_w0) / (1.0 + tan_w0);
-                // m_fdbk = alpha;
-                // return;
-                float x = std::log(cutoff * 48000.f / m_sampleRate) / std::log(2.f);
-                m_fdbk =
-                    0.5331889f + (0.9955032f - 0.5331889f) / std::pow(1 + std::pow(x / 82.98294f, 7.04862f), 795534.f);
-                // m_fdbk = 0.5362941f +
-                //          (1.001046f - 0.5362941f) / std::pow(1 + std::pow(cutoff / 20569.74f,
-                //          0.9646992f), 5.119245f);
-                // m_fdbk = std::exp(-w0);
-                //  auto c2 = 2 - cos(w0);
-                //  m_fdbk = c2 - sqrt(c2 * c2 - 1);
-                //                  m_fdbk = std::exp(-2.0f * static_cast<float>(M_PI) * (0.5 - cutoff / m_sampleRate));
+                m_fdbk = std::exp(-w0);
             }
         }
     }
